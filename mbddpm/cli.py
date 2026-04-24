@@ -96,6 +96,7 @@ def main():
     # sample
     sample_parser = subparsers.add_parser("sample", help="Generate samples")
     sample_parser.add_argument("checkpoint", type=str)
+    sample_parser.add_argument("config", type=str, help="config yaml")
     sample_parser.add_argument("--num", type=int, default=10)
     sample_parser.add_argument("--device", default="auto")
 
