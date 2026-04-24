@@ -24,7 +24,7 @@ MB-DDPM is a lightweight and reproducible framework for generating synthetic mic
 mbddpm train data/demo_case_first10.csv configs/default.yaml --device cuda
 
 # Generate samples
-mbddpm sample runs/mbddpm_demo/epoch_10000_code.pt --num 10 --device cuda
+mbddpm sample runs/mbddpm_demo/epoch_10000_code.pt configs/default.yaml --num 10 --device cuda
 ```
 ---
 
@@ -33,9 +33,9 @@ mbddpm sample runs/mbddpm_demo/epoch_10000_code.pt --num 10 --device cuda
 Clone the repository and install as a Python package:
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/WVRAINS/mbddpm.git
 cd mbddpm
-pip install -e .
+pip install -e . -i https://pypi.org/simple
 ```
 
 
