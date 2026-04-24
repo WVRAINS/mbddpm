@@ -33,9 +33,9 @@ mbddpm sample runs/mbddpm_demo/epoch_10000_code.pt --num 10 --device cuda
 Clone the repository and install as a Python package:
 
 ```bash
-git clone <repo-url>
+git clone https://github.com/WVRAINS/mbddpm.git
 cd mbddpm
-pip install -e .
+pip install -e . -i https://pypi.org/simple
 ```
 
 
