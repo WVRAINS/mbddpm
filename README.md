@@ -21,10 +21,10 @@ MB-DDPM is a lightweight and reproducible framework for generating synthetic mic
 
 ```bash
 # Train
-mbddpm train data/demo_case_first10.csv configs/default.yaml --device cuda
+mbddpm train data\demo_case_first10.csv configs\default.yaml --device cuda
 
 # Generate samples
-mbddpm sample runs/mbddpm_demo/epoch_10000_code.pt configs/default.yaml --num 10 --device cuda
+mbddpm sample runs\mbddpm_demo\epoch_10000_code.pt configs\default.yaml --num 10 --device cuda
 ```
 ---
 
@@ -132,7 +132,7 @@ from mbddpm.api import generate_samples
 from mbddpm.utils.save_sample import save_samples
 
 samples = generate_samples(
-    checkpoint_path="runs/my_experiment/checkpoints/epoch_100.pt",
+    checkpoint_path="runs\my_experiment\checkpoints\epoch_100.pt",
     generate_num=10,
     device="cuda",
 )
