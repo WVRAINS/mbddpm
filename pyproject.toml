@@ -1,0 +1,47 @@
+[project]
+name = "mbddpm"
+version = "0.1.0"
+description = "MB-DDPM: A reproducible Python package for diffusion-based microbiome data simulation"
+authors = [{ name = "Ban Huo" }]
+readme = "README.md"
+requires-python = ">=3.9"
+
+dependencies = [
+    "torch>=2.0",
+    "numpy>=1.23",
+    "pandas>=1.5",
+    "tqdm>=4.65",
+    "pyyaml>=6.0",
+    "timm>=0.9"
+]
+
+license = { text = "MIT" }
+
+keywords = [
+    "diffusion-model",
+    "pytorch",
+    "microbiome",
+    "generative-model",
+    "ddpm"
+]
+
+classifiers = [
+    "Programming Language :: Python :: 3",
+    "Programming Language :: Python :: 3.9",
+    "Operating System :: OS Independent",
+    "License :: OSI Approved :: MIT License",
+]
+
+[project.scripts]
+mbddpm = "mbddpm.cli:main"
+
+mbddpm-train = "mbddpm.cli:train_cmd"
+mbddpm-sample = "mbddpm.cli:sample_cmd"
+
+[build-system]
+requires = ["setuptools>=65", "wheel"]
+build-backend = "setuptools.build_meta"
+
+[tool.setuptools.packages.find]
+where = ["."]
+include = ["mbddpm*"]
