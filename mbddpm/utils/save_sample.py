@@ -27,7 +27,7 @@ def save_samples(samples,
     else:
         df = pd.DataFrame(samples_numpy)
 
-    save_path = f'./generated/{data_name}'
+    save_path = f'.\generated\{data_name}'
     os.makedirs(save_path, exist_ok=True)
 
     generate_time = datetime.now().strftime("%m%d-%H%M%S")
