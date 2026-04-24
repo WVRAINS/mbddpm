@@ -54,11 +54,9 @@ def train_cmd(args):
 # Sample
 # ======================
 def sample_cmd(args):
-    if not os.path.exists(args.config):
-        raise FileNotFoundError(f"Config not found: {args.config}")
-
     cfg = load_config(args.config)
-    data_name = cfg["experiment"]["name"],
+
+    data_name = cfg["experiment"]["name"]
 
     if not os.path.exists(args.checkpoint):
         raise FileNotFoundError(f"Checkpoint not found: {args.checkpoint}")
@@ -79,7 +77,6 @@ def sample_cmd(args):
         data_name=data_name,
         num_epochs=args.num
     )
-
 
 # ======================
 # Main CLI
