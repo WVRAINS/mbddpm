@@ -54,6 +54,8 @@ def train_cmd(args):
 # Sample
 # ======================
 def sample_cmd(args):
+    cfg = load_config(args.config)
+    data_name = cfg["experiment"]["name"],
 
     if not os.path.exists(args.checkpoint):
         raise FileNotFoundError(f"Checkpoint not found: {args.checkpoint}")
@@ -71,8 +73,8 @@ def sample_cmd(args):
     save_samples(
         samples,
         taxa_list=sampler.taxa_list,
-        data_name="generated",
-        num_epochs=0
+        data_name=data_name,
+        num_epochs=args.num
     )
 
 

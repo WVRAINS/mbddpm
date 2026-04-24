@@ -6,7 +6,7 @@ import torch
 
 def save_samples(samples,
                  taxa_list=None,
-                 data_name='generated',
+                 data_name='data',
                  add_method="code",
                  sampling="DDPM",
                  num_epochs=0,
@@ -27,7 +27,7 @@ def save_samples(samples,
     else:
         df = pd.DataFrame(samples_numpy)
 
-    save_path = f'./{data_name}/{save_dir}'
+    save_path = f'./generated/{data_name}'
     os.makedirs(save_path, exist_ok=True)
 
     generate_time = datetime.now().strftime("%m%d-%H%M%S")
