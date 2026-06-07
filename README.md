@@ -95,7 +95,7 @@ model:
   add_method: code
 
 training:
-  num_epochs: 10000
+  num_epochs: 10000  # recommended ≥ 150000 iterations for stable convergence
   lr: 0.00001
   ema_decay: 0.9999
   save_epoch: 5000
@@ -195,7 +195,7 @@ DOI: https://doi.org/10.1016/j.inffus.2025.103880
 
 The publication introduces a denoising diffusion probabilistic model for realistic microbiome data simulation, while this repository provides an open-source and reproducible implementation of the framework.
 
-## Citation
+## 📖 Citation
 If you use MB-DDPM in your work, please cite:
 ```bibtex
 @article{huo2025mbddpm,
@@ -207,7 +207,7 @@ doi={10.1016/j.inffus.2025.103880}
 }
 ```
 
-## Scientific Impact
+## 🌍 Scientific Impact
 
 MB-DDPM provides the official open-source implementation of the framework
 presented in:
@@ -226,6 +226,6 @@ Potential applications include:
 - machine learning model evaluation
 - microbiome data augmentation
 
-## License
+## ⚖️ License
 MB-DDPM is released under the MIT License.
 See LICENSE for details.

@@ -10,7 +10,7 @@ model:
   add_method: code
 
 training:
-  num_epochs: 10000
+  num_epochs: 10000 # recommended ≥ 150000 iterations for stable convergence
   lr: 0.00001
   ema_decay: 0.9999
   save_epoch: 5000
