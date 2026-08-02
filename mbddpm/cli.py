@@ -23,7 +23,7 @@ def train_cmd(args):
     trainer = Trainer(
         data=cfg["experiment"]["dataset"],
         data_name=cfg["experiment"]["name"],
-        seed=cfg["training"]["seed"],
+        seed=cfg["experiment"]["seed"],
         batch_size=cfg["data"]["batch_size"],
         num_time_steps=cfg["model"]["num_time_steps"],
         add_method=cfg["model"]["add_method"],
