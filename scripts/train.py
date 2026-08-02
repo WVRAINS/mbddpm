@@ -1,34 +1,27 @@
 import argparse
 from mbddpm.api import train_model
-from mbddpm.data.csv_dataset import csv_dataset
 from mbddpm.utils.seed import set_seed
 import yaml
 
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--data_path", type=str, required=True)
-    parser.add_argument("--config", type=str, required=True)
-    parser.add_argument("--device", type=str, default="cpu")
+    parser.add_argument("--config", type=str, default="../configs/config.yaml")
 
     args = parser.parse_args()
 
     # 读取配置
-    with open(args.config, "r") as f:
+    with open(args.config, "r", encoding="utf-8") as f:
         cfg = yaml.safe_load(f)
 
     # 设置随机种子
     set_seed(cfg["experiment"]["seed"])
 
-    # 加载数据
-    dataset = csv_dataset(args.data_path)
-
     # 训练
     train_model(
-        data=dataset.data,
-        taxa_list=dataset.taxa_list,
+        data=cfg["experiment"]["dataset"],
         data_name=cfg["experiment"]["name"],
-        device=args.device,
+        device=cfg["device"],
         batch_size=cfg["data"]["batch_size"],
         num_epochs=cfg["training"]["num_epochs"],
         save_epoch=cfg["training"]["save_epoch"],

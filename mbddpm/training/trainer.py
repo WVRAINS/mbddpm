@@ -5,30 +5,39 @@ import torch.optim as optim
 from torch.utils.data import DataLoader
 from tqdm import tqdm
 from timm.utils import ModelEmaV3
+from datetime import datetime
 
+from mbddpm.utils.csv_dataset import csv_dataset
+from mbddpm.utils.experiment_logger import save_experiment_record, append_excel_record, get_checkpoint_size, \
+    get_system_info
 from mbddpm.models.unet import UNET
 from mbddpm.models.scheduler import DDPMScheduler
+from mbddpm.utils.get_project_root import get_project_root
+from mbddpm.utils.seed import set_seed
+
 
 class Trainer:
     def __init__(
         self,
         data,
-        taxa_list,
         data_name,
+        seed=42,
         batch_size=16,
         num_time_steps=1000,
         lr=1e-5,
         ema_decay=0.9999,
         add_method='code',
         device='cpu',
-        num_epochs=10000,
-        save_epoch=10000,
+        num_epochs=150000,
+        save_epoch=150000,
         checkpoint_path=None,
     ):
-        self.data = data
-        self.taxa_list = taxa_list
+        dataset = csv_dataset(data)
+        self.data = dataset.data
+        self.taxa_list = dataset.taxa_list
         self.data_name = data_name
-        self.num_features = len(taxa_list)
+        self.seed = seed
+        self.num_features = len(self.taxa_list)
         self.batch_size = batch_size
         self.num_time_steps = num_time_steps
         self.add_method = add_method
@@ -52,8 +61,15 @@ class Trainer:
         if checkpoint_path:
             self.load_checkpoint(checkpoint_path)
         self.criterion = nn.MSELoss()
+        # time
+        self.train_start_time = None
+        self.current_loss = None
+        self.experiment_id = datetime.now().strftime("%Y%m%d_%H%M%S")
 
     def train(self):
+        set_seed(self.seed)
+        # 记录训练开始时间
+        self.train_start_time = datetime.now()
         for epoch in range(self.num_epochs):
             self.model.train()
             with tqdm(self.loader, desc=f"Epoch [{epoch+1}/{self.num_epochs}]") as bar:
@@ -78,22 +94,51 @@ class Trainer:
                 self.save_checkpoint(epoch + 1)
 
     def save_checkpoint(self, epoch):
-        save_dir = os.path.join("runs", self.data_name)
-        os.makedirs(save_dir, exist_ok=True)
-
-        path = os.path.join(
-            save_dir,
-            f"epoch_{epoch}_{self.add_method}.pt"
-        )
+        checkpoint_dir = (get_project_root() / "checkpoint" / self.data_name)
+        checkpoint_dir.mkdir(parents=True,exist_ok=True)
+        path = checkpoint_dir / f"epoch_{epoch}_"f"{self.data_name}_"f"{self.add_method}.pt"
 
         checkpoint = {
             "weights": self.model.state_dict(),
             "optimizer": self.optimizer.state_dict(),
             "ema": self.ema.state_dict(),
-            "data_shape": [self.data.shape[0], self.data.shape[1]],
+            "data_shape": [self.data.shape[2], self.data.shape[3]],
             "num_features": self.num_features,
-            "taxa_list": self.taxa_list
+            "taxa_list": self.taxa_list,
+            "data_name": self.data_name,
+            "num_time_steps": self.num_time_steps,
+            "epoch": epoch,
         }
 
         torch.save(checkpoint, path)
+        checkpoint_time = datetime.now()
         print("Saved:", path)
+
+        checkpoint_size = get_checkpoint_size(path)
+        elapsed_seconds = (checkpoint_time - self.train_start_time).total_seconds()
+        record = {
+            "experiment_id": self.experiment_id,
+            "event_type": "training",
+            "data_name": self.data_name,
+            "model": "MB-DDPM",
+            "checkpoint": path.name,
+            "checkpoint_path": str(path.resolve()),
+            "epoch": epoch,
+            "train_start_time": self.train_start_time.strftime("%Y-%m-%d %H:%M:%S"),
+            "checkpoint_time": checkpoint_time.strftime("%Y-%m-%d %H:%M:%S"),
+            "elapsed_seconds": round(elapsed_seconds, 3),
+            "num_samples": self.data.shape[0],
+            "num_features": self.num_features,
+            "data_shape": str(self.data.shape),
+            "batch_size": self.batch_size,
+            "num_epochs": self.num_epochs,
+            "learning_rate": self.optimizer.param_groups[0]["lr"],
+            "ema_decay": getattr(self.ema, "decay", None),
+            "num_time_steps": self.num_time_steps,
+            "last_loss": self.current_loss,
+            "checkpoint_size_MB": checkpoint_size,
+            "device": str(self.device)
+        }
+        record.update(get_system_info(self.device))
+
+        append_excel_record(record)

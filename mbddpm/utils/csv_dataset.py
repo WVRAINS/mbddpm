@@ -1,7 +1,7 @@
 import pandas as pd
 import torch
 from torch.utils.data import Dataset
-from mbddpm.data.process_data import process_data
+from mbddpm.utils.process_data import process_data
 
 
 class csv_dataset(Dataset):

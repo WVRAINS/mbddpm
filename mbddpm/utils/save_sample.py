@@ -3,14 +3,15 @@ import pandas as pd
 from datetime import datetime
 import torch
 
+from mbddpm.utils.get_project_root import get_project_root
+
 
 def save_samples(samples,
                  taxa_list=None,
                  data_name='data',
                  add_method="code",
-                 sampling="DDPM",
-                 num_epochs=0,
-                 save_dir="result"):
+                 sampling="MB-DDPM",
+                 num_epochs=150000):
     if isinstance(samples, torch.Tensor):
 
         if samples.dim() > 2:
@@ -27,7 +28,8 @@ def save_samples(samples,
     else:
         df = pd.DataFrame(samples_numpy)
 
-    save_path = f'.\generated\{data_name}'
+    save_path = get_project_root() / "generated" / data_name
+
     os.makedirs(save_path, exist_ok=True)
 
     generate_time = datetime.now().strftime("%m%d-%H%M%S")
@@ -43,4 +45,4 @@ def save_samples(samples,
 
     df.to_csv(full_path, index=False)
 
-    print(f"Samples saved to: {full_path}")
+    print(f"Samples saved to: {os.path.abspath(full_path)}")
