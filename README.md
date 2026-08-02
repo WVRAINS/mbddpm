@@ -23,24 +23,6 @@ MB-DDPM is a reproducible Python package for generating synthetic microbiome dat
 - Reproducible training and sampling through YAML configuration
 ---
 
-## 🚀 Quick Start (Recommended)
-
-## Demo Dataset
-
-A toy dataset is provided:
-
-data/demo_case_first10.csv
-
-This dataset allows users to test training and sampling workflows quickly.
-
-```bash
-# Train
-mbddpm train configs/config.yaml
-
-# Generate samples
-mbddpm sample configs/config.yaml
-```
----
 
 ## 📦 Installation
 
@@ -57,11 +39,12 @@ git clone https://github.com/WVRAINS/mbddpm.git
 cd mbddpm
 
 pip install -e .
-
+```
 
 ## 📚 Dependencies
 Installed automatically via pip:
-```bash
+
+```text
 torch>=2.0
 numpy>=1.23
 pandas>=1.5
@@ -70,6 +53,119 @@ pyyaml>=6.0
 timm>=0.9
 einops>=0.7
 ```
+## 🐳 Docker Support
+
+MB-DDPM provides a Docker-based execution environment to improve software reproducibility. The provided Dockerfile defines a fixed runtime environment based on PyTorch and CUDA, including the required dependencies for model training and synthetic microbiome data generation.
+
+### Build Docker Image
+
+Clone repository:
+
+```bash
+git clone https://github.com/WVRAINS/mbddpm.git
+cd mbddpm
+```
+
+Build the Docker image:
+
+```bash
+docker build -t mbddpm .
+```
+
+### Run with GPU Support
+
+MB-DDPM supports GPU acceleration through NVIDIA CUDA.
+
+Run the container with GPU access:
+
+```bash
+docker run --gpus all -it mbddpm
+```
+
+Verify the installation:
+
+```bash
+mbddpm --help
+```
+
+Expected output:
+
+```text
+usage: mbddpm [-h] {train,sample} ...
+
+positional arguments:
+  {train,sample}
+    train         Train model
+    sample        Generate samples
+```
+
+### Training
+
+Training can be performed using the YAML configuration file:
+
+```bash
+mbddpm train configs/config.yaml
+```
+
+Example configuration:
+
+```yaml
+experiment:
+  name: mbddpm_demo
+  dataset: "./data/demo_case.csv"
+  seed: 42
+
+data:
+  batch_size: 16
+
+model:
+  num_time_steps: 1000
+  add_method: code
+
+training:
+  num_epochs: 200000
+  lr: 0.00001
+  ema_decay: 0.9999
+  save_epoch: 50000
+
+sampling:
+  checkpoint: "./checkpoint/mbddpm_demo/epoch_200000_mbddpm_demo_code.pt" 
+  # checkpoint needs to be modified according to the actual situation.
+  generate_num: 1000
+
+device: "cuda"
+```
+
+### Sampling
+
+Specify the checkpoint path in:
+
+```yaml
+sampling:
+  checkpoint: "./checkpoint/<experiment_name>/epoch_xxx_<experiment_name>_<method>.pt"
+  generate_num: 1000
+```
+
+Run sampling:
+
+```bash
+mbddpm sample configs/config.yaml
+```
+
+Generated synthetic microbiome samples will be saved automatically.
+
+### Reproducible Environment
+
+The Docker environment contains:
+
+- Python >=3.9
+- PyTorch 2.4.0
+- CUDA-enabled runtime
+- Required dependencies for MB-DDPM
+
+The Docker workflow enables reproducible execution of MB-DDPM training and sampling procedures across different computing environments.
+
+
 ## 📊 Data Format
 Input must be a CSV file:
 
@@ -77,7 +173,7 @@ Shape: (n_samples, n_features)
 Column names (optional) are used as taxa_list
 
 Example:
-```bash
+```csv
 taxa1,taxa2,taxa3
 0.1,0.2,0.3
 0.4,0.5,0.6
@@ -85,30 +181,33 @@ taxa1,taxa2,taxa3
 ```
 
 ## ⚙️ Configuration (YAML)
-```bash
+
+MB-DDPM uses YAML files to control dataset settings, diffusion parameters, training configuration, and sampling options.
+
+```yaml
 experiment:
-  name: dataset_case
-  dataset: "./data/demo_case.csv"
-  seed: 42
+  name: dataset_case                 # experiment name
+  dataset: "./data/demo_case.csv"    # input microbiome CSV file
+  seed: 42                           # random seed
 
 data:
-  batch_size: 16  # 16
+  batch_size: 16                     # training batch size
 
 model:
-  num_time_steps: 1000  # 1000
-  add_method: code  # code
+  num_time_steps: 1000               # number of diffusion steps
+  add_method: code                   # data representation method
 
 training:
-  num_epochs: 200000 # 
-  lr: 0.00001  # 0.00001
-  ema_decay: 0.9999 # 0.9999
-  save_epoch: 50000 # num_epochs
+  num_epochs: 200000                 # training epochs
+  lr: 0.00001                        # learning rate
+  ema_decay: 0.9999                  # EMA decay factor
+  save_epoch: 50000                  # checkpoint saving interval
 
 sampling:
-  checkpoint: "./checkpoint/dataset_case/epoch_200000_dataset_case_code.pt"
-  generate_num: 1000  # 1000
+  checkpoint: "./checkpoint/dataset_case/epoch_200000_dataset_case_code.pt"  # trained checkpoint
+  generate_num: 1000                 # number of generated samples
 
-device: "cuda:0"
+device: "cuda:0"                     # computation device (e.g., cuda:0 or cpu)
 ```
 ## 🧪 Training(CLI)
 ```bash
@@ -157,22 +256,6 @@ samples = generate_samples(
     generate_num=1000,
     device="cuda",
 )
-```
-
-## 🐳 Docker Support
-
-A Dockerfile is provided to create a reproducible execution environment based on PyTorch and CUDA.
-
-Build:
-
-```bash
-docker build -t mbddpm .
-
-docker run --gpus all -it mbddpm
-
-mbddpm train configs/config.yaml
-
-mbddpm sample configs/config.yaml
 ```
 
 ## 📌 Notes
