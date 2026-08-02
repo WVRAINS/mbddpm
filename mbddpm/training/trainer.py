@@ -49,7 +49,7 @@ class Trainer:
         )
         print("Using device:", self.device)
         self.loader = DataLoader(
-            data,
+            self.data,
             batch_size=batch_size,
             shuffle=True,
             drop_last=True,
