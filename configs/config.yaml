@@ -1,6 +1,6 @@
 experiment:
   name: dataset_case_first10_08030300
-  dataset: "D:/common/document/GitHub/mbddpm/data/demo_case_first10.csv"
+  dataset: "./data/demo_case_first10.csv"
   seed: 42
 
 
@@ -18,7 +18,7 @@ training:
   save_epoch: 50 # num_epochs
 
 sampling:
-  checkpoint: "D:/common/document/GitHub/mbddpm/checkpoint/dataset_case_first10_08030010/epoch_100_dataset_case_first10_08030010_code.pt"
+  checkpoint: "./checkpoint/dataset_case_first10_08030010/epoch_100_dataset_case_first10_08030010_code.pt"
   generate_num: 100  # 1000
 
 device: cuda
