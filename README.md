@@ -28,16 +28,16 @@ MB-DDPM is a lightweight and reproducible framework for generating synthetic mic
 
 A toy dataset is provided:
 
-data/demo_case_first20.csv
+data/demo_case_first10.csv
 
 This dataset allows users to test training and sampling workflows quickly.
 
 ```bash
 # Train
-mbddpm train data\demo_case_first20.csv configs\default.yaml --device cuda
+mbddpm train configs/config.yaml
 
 # Generate samples
-mbddpm sample runs\mbddpm_demo\epoch_10000_code.pt configs\default.yaml --num 10 --device cuda
+mbddpm sample configs/config.yaml
 ```
 ---
 
@@ -108,7 +108,7 @@ device: cuda
 ```
 ## 🧪 Training(CLI)
 ```bash
-mbddpm train data.csv config.yaml --device cuda --seed 42
+mbddpm train configs/config.yaml
 ```
 ## 🎲 Sampling(CLI)
 ```bash

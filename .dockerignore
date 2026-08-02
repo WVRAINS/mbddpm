@@ -1,0 +1,10 @@
+.git
+__pycache__
+*.pyc
+
+checkpoint
+generated
+
+*.pt
+*.csv
+*.xlsx
