@@ -61,11 +61,10 @@ def sample_cmd(args):
 
     save_samples(
         samples,
-        taxa_list=checkpoint.taxa_list,
-        data_name=checkpoint.data_name,
-        num_epochs=checkpoint.epoch
+        taxa_list=checkpoint["taxa_list"],
+        data_name=checkpoint["data_name"],
+        num_epochs=checkpoint["epoch"]
     )
-
 # ======================
 # Main CLI
 # ======================
