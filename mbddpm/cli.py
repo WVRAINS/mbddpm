@@ -42,9 +42,6 @@ def train_cmd(args):
 # ======================
 def sample_cmd(args):
 
-    if not os.path.exists(args.checkpoint):
-        raise FileNotFoundError(f"Checkpoint not found: {args.checkpoint}")
-
     if not os.path.exists(args.config):
         raise FileNotFoundError(f"Config not found: {args.config}")
 
