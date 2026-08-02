@@ -27,8 +27,7 @@ build/
 # =========================
 # 5. Training outputs
 # =========================
-runs/
-run/
+checkpoint/
 
 # =========================
 # 6. Generated results

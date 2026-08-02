@@ -7,7 +7,7 @@
 
 **MB-DDPM: A reproducible Python package for diffusion-based microbiome data simulation**
 
-MB-DDPM is a lightweight and reproducible framework for generating synthetic microbiome data using diffusion models. It supports CSV-based datasets, YAML configuration, GPU acceleration, and a clean CLI interface.
+MB-DDPM is a reproducible Python package for generating synthetic microbiome data using diffusion models. It supports CSV-based datasets, YAML configuration, GPU acceleration, command-line execution, and reproducible experiment management.
 
 ---
 
@@ -18,8 +18,9 @@ MB-DDPM is a lightweight and reproducible framework for generating synthetic mic
 - Unified **CLI interface** (`mbddpm train / sample`)  
 - Supports both **CPU** and **GPU**  
 - Automatic data reshaping for model input  
-- Structured output for reproducibility (`runs/`, `generated/`)  
-
+- Structured output for reproducible experiments (`checkpoint/`, `generated/`, experiment records)
+- Automatic checkpoint saving and metadata management
+- Reproducible training and sampling through YAML configuration
 ---
 
 ## 🚀 Quick Start (Recommended)
@@ -45,8 +46,9 @@ mbddpm sample configs/config.yaml
 
 Requirements:
 
-- Python >=3.10
+- Python >=3.9
 - PyTorch >=2.0
+- CUDA-enabled GPU is recommended for training
 
 Clone repository:
 
@@ -85,26 +87,28 @@ taxa1,taxa2,taxa3
 ## ⚙️ Configuration (YAML)
 ```bash
 experiment:
-  name: mbddpm_demo
+  name: dataset_case
+  dataset: "./data/demo_case.csv"
   seed: 42
 
 data:
-  batch_size: 16
+  batch_size: 16  # 16
 
 model:
-  num_time_steps: 1000
-  add_method: code
+  num_time_steps: 1000  # 1000
+  add_method: code  # code
 
 training:
-  num_epochs: 10000  # recommended ≥ 150000 iterations for stable convergence
-  lr: 0.00001
-  ema_decay: 0.9999
-  save_epoch: 5000
+  num_epochs: 200000 # 
+  lr: 0.00001  # 0.00001
+  ema_decay: 0.9999 # 0.9999
+  save_epoch: 50000 # num_epochs
 
 sampling:
-  generate_num: 1000
+  checkpoint: "./checkpoint/dataset_case/epoch_200000_dataset_case_code.pt"
+  generate_num: 1000  # 1000
 
-device: cuda
+device: "cuda:0"
 ```
 ## 🧪 Training(CLI)
 ```bash
@@ -112,37 +116,33 @@ mbddpm train configs/config.yaml
 ```
 ## 🎲 Sampling(CLI)
 ```bash
-mbddpm sample runs/<experiment_name>/checkpoints/epoch_XXX_code.pt --num 10 --device cuda
+mbddpm sample configs/config.yaml
 ```
---num: number of generated samples
-Output is automatically saved
+--The checkpoint path and generation number are specified in the YAML configuration file.
 
 ## 📁 Output Structure
 
 ```text
-runs/
+checkpoint/
 ├── <experiment_name>/
-│   └── checkpoints/
-│       └── epoch_XXX_code.pt
+│   └── epoch_XXX_<experiment_name>_<method>.pt
+
 
 generated/
-└── <experiment_name>/
-    └── samples_*.csv
+├── <experiment_name>/
+│   └── <samples>.csv
+│── experiment_record.xlsx
 ```
 
 ## 🧠 Python API
 Training
 ```bash
 from mbddpm.api import train_model
-from mbddpm.data.csv_dataset import csv_dataset
-
-dataset = csv_dataset("data.csv")
 
 train_model(
-    data=dataset.data,
-    taxa_list=dataset.taxa_list,
-    data_name="my_experiment",
-    num_epochs=10000,
+    data="data/demo_case_first10.csv",
+    data_name="demo_case",
+    num_epochs=20000,
     batch_size=16,
     device="cuda",
 )
@@ -151,19 +151,28 @@ Sampling
 
 ```bash
 from mbddpm.api import generate_samples
-from mbddpm.utils.save_sample import save_samples
 
 samples = generate_samples(
-    checkpoint_path="runs\my_experiment\checkpoints\epoch_100.pt",
-    generate_num=10,
+    checkpoint_path="checkpoint/demo_case/epoch_100_demo_case_code.pt",
+    generate_num=1000,
     device="cuda",
 )
+```
 
-save_samples(
-    samples,
-    taxa_list=dataset.taxa_list,
-    data_name="my_experiment"
-)
+## 🐳 Docker Support
+
+A Dockerfile is provided to create a reproducible execution environment based on PyTorch and CUDA.
+
+Build:
+
+```bash
+docker build -t mbddpm .
+
+docker run --gpus all -it mbddpm
+
+mbddpm train configs/config.yaml
+
+mbddpm sample configs/config.yaml
 ```
 
 ## 📌 Notes
@@ -183,9 +192,22 @@ Note:
 num_time_steps (e.g.,1000) refers to diffusion steps, not sample count.
 
 ## 🔁 Reproducibility
-Set random seed via CLI (--seed)\
-Outputs are organized by experiment name\
-Checkpoints include full model state and metadata\
+Experiments are controlled by YAML configuration files, including:
+
+- random seed
+- dataset path
+- training parameters
+- diffusion settings
+- sampling parameters
+
+Checkpoints store:
+
+- model weights
+- optimizer state
+- EMA parameters
+- data shape
+- feature information
+- experiment metadata
 
 ## 📖 Associated publication
 This repository accompanies the following publication:
