@@ -1,8 +1,7 @@
 experiment:
-  name: dataset_case_first10_08030300
-  dataset: "./data/demo_case_first10.csv"
+  name: dataset_case_0803
+  dataset: "./data/demo_case.csv"
   seed: 42
-
 
 data:
   batch_size: 16  # 16
@@ -12,13 +11,13 @@ model:
   add_method: code  # code
 
 training:
-  num_epochs: 100 # recommended ≥ 150000 iterations for stable convergence
+  num_epochs: 200000 #
   lr: 0.00001  # 0.00001
   ema_decay: 0.9999 # 0.9999
-  save_epoch: 50 # num_epochs
+  save_epoch: 50000 # num_epochs
 
 sampling:
-  checkpoint: "./checkpoint/dataset_case_first10_08030010/epoch_100_dataset_case_first10_08030010_code.pt"
-  generate_num: 100  # 1000
+  checkpoint: "./checkpoint/dataset_case_0803/epoch_200000_dataset_case_0803_code.pt"
+  generate_num: 1000  # 1000
 
-device: cuda
+device: "cuda:1"
