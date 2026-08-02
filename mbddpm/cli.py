@@ -13,9 +13,6 @@ from mbddpm.training.sampler import Sampler
 # ======================
 def train_cmd(args):
 
-    if not os.path.exists(args.data):
-        raise FileNotFoundError(f"Dataset not found: {args.data}")
-
     if not os.path.exists(args.config):
         raise FileNotFoundError(f"Config not found: {args.config}")
 

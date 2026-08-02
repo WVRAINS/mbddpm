@@ -66,6 +66,7 @@ pandas>=1.5
 tqdm>=4.65
 pyyaml>=6.0
 timm>=0.9
+einops>=0.7
 ```
 ## 📊 Data Format
 Input must be a CSV file:
