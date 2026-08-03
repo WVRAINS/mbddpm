@@ -104,7 +104,7 @@ positional arguments:
 Training can be performed using the YAML configuration file:
 
 ```bash
-mbddpm train configs/config.yaml
+mbddpm train configs/config_IBD_case.yaml
 ```
 
 Example configuration:
@@ -112,7 +112,7 @@ Example configuration:
 ```yaml
 experiment:
   name: mbddpm_demo
-  dataset: "./data/demo_case.csv"
+  dataset: "./data/demo_IBD_case.csv"
   seed: 42
 
 data:
@@ -123,13 +123,13 @@ model:
   add_method: code
 
 training:
-  num_epochs: 200000
+  num_epochs: 150000
   lr: 0.00001
   ema_decay: 0.9999
   save_epoch: 50000
 
 sampling:
-  checkpoint: "./checkpoint/mbddpm_demo/epoch_200000_mbddpm_demo_code.pt" 
+  checkpoint: "./checkpoint/mbddpm_demo/epoch_150000_mbddpm_demo_code.pt" 
   # checkpoint needs to be modified according to the actual situation.
   generate_num: 1000
 
@@ -149,7 +149,7 @@ sampling:
 Run sampling:
 
 ```bash
-mbddpm sample configs/config.yaml
+mbddpm sample configs/config_IBD_case.yaml
 ```
 
 Generated synthetic microbiome samples will be saved automatically.
@@ -187,7 +187,7 @@ MB-DDPM uses YAML files to control dataset settings, diffusion parameters, train
 ```yaml
 experiment:
   name: dataset_case                 # experiment name
-  dataset: "./data/demo_case.csv"    # input microbiome CSV file
+  dataset: "./data/demo_IBD_case.csv"    # input microbiome CSV file
   seed: 42                           # random seed
 
 data:
@@ -211,11 +211,11 @@ device: "cuda:0"                     # computation device (e.g., cuda:0 or cpu)
 ```
 ## 🧪 Training(CLI)
 ```bash
-mbddpm train configs/config.yaml
+mbddpm train configs/config_IBD_case.yaml
 ```
 ## 🎲 Sampling(CLI)
 ```bash
-mbddpm sample configs/config.yaml
+mbddpm sample configs/config_IBD_case.yaml
 ```
 --The checkpoint path and generation number are specified in the YAML configuration file.
 
@@ -235,11 +235,11 @@ generated/
 
 ## 🧠 Python API
 Training
-```bash
+```python
 from mbddpm.api import train_model
 
 train_model(
-    data="data/demo_case_first10.csv",
+    data="data/demo_IBD_case_first10.csv",
     data_name="demo_case",
     num_epochs=20000,
     batch_size=16,
@@ -248,7 +248,7 @@ train_model(
 ```
 Sampling
 
-```bash
+```python
 from mbddpm.api import generate_samples
 
 samples = generate_samples(

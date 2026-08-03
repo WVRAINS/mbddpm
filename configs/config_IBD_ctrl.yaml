@@ -1,6 +1,6 @@
 experiment:
-  name: dataset_case_0803
-  dataset: "./data/demo_case.csv"
+  name: dataset_IBD_case
+  dataset: "./data/demo_IBD_ctrl.csv"
   seed: 42
 
 data:
@@ -11,13 +11,13 @@ model:
   add_method: code  # code
 
 training:
-  num_epochs: 200000 #
+  num_epochs: 150000 #
   lr: 0.00001  # 0.00001
   ema_decay: 0.9999 # 0.9999
-  save_epoch: 50000 # num_epochs
+  save_epoch: 150000 # num_epochs
 
 sampling:
-  checkpoint: "./checkpoint/dataset_case_0803/epoch_200000_dataset_case_0803_code.pt"
+  checkpoint: "./checkpoint/mbddpm_demo_IBD_case/epoch_150000_code.pt"
   generate_num: 1000  # 1000
 
-device: "cuda:1"
+device: "cuda:0"

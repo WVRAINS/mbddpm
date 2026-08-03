@@ -1,0 +1,23 @@
+experiment:
+  name: dataset_IBD_case
+  dataset: "./data/demo_IBD_case.csv"
+  seed: 42
+
+data:
+  batch_size: 16  # 16
+
+model:
+  num_time_steps: 1000  # 1000
+  add_method: code  # code
+
+training:
+  num_epochs: 150000 #
+  lr: 0.00001  # 0.00001
+  ema_decay: 0.9999 # 0.9999
+  save_epoch: 50000 # num_epochs
+
+sampling:
+  checkpoint: "./checkpoint/mbddpm_demo_IBD_case/epoch_150000_code.pt"
+  generate_num: 1000  # 1000
+
+device: "cuda:0"

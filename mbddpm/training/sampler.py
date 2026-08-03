@@ -38,7 +38,6 @@ class Sampler:
 
         x = torch.randn((self.generate_num, 1, self.data_shape[0], self.data_shape[1]),device=self.device)
 
-        # for t in reversed(range(self.num_time_steps)):
         for t in tqdm(
                 reversed(range(self.num_time_steps)),
                 total=self.num_time_steps,
@@ -70,7 +69,7 @@ class Sampler:
 
         # padding
         samples = samples[:, :self.num_features]
-        # sampling结束
+        # end sampling
         sample_end_time = datetime.now()
         elapsed_seconds = (sample_end_time-sample_start_time).total_seconds()
         record = {
@@ -85,7 +84,7 @@ class Sampler:
             "sampling_seconds":round(elapsed_seconds,3),
             "device":str(self.device)
         }
-        # GPU环境
+        # GPU
         record.update(get_system_info(self.device))
 
         append_excel_record(record)

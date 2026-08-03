@@ -21,4 +21,4 @@ def create_experiment_dir(cfg):
 
 
 def save_config_copy(cfg_path, exp_dir):
-    shutil.copy(cfg_path, os.path.join(exp_dir, "config.yaml"))
+    shutil.copy(cfg_path, os.path.join(exp_dir, "config_IBD_case.yaml"))
