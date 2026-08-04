@@ -14,7 +14,7 @@ training:
   num_epochs: 150000 #
   lr: 0.00001  # 0.00001
   ema_decay: 0.9999 # 0.9999
-  save_epoch: 50000 # num_epochs
+  save_epoch: 150000 # num_epochs
 
 sampling:
   checkpoint: "./checkpoint/mbddpm_demo_IBD_case/epoch_150000_code.pt"
