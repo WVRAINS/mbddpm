@@ -10,7 +10,7 @@ from mbddpm.utils.seed import set_seed
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--config", type=str, default="../configs/config_IBD_case.yaml")
+    parser.add_argument("--config", type=str, default="../configs/config_IBD_ctrl.yaml")
 
     args = parser.parse_args()
     # get config
@@ -21,7 +21,7 @@ def main():
 
 
     samples = generate_samples(
-        checkpoint = cfg["sampling"]["checkpoint"],
+        checkpoint_path = cfg["sampling"]["checkpoint"],
         device = cfg["device"],
         generate_num = cfg["sampling"]["generate_num"],
     )

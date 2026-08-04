@@ -1,6 +1,6 @@
 experiment:
-  name: dataset_IBD_case
-  dataset: "./data/demo_IBD_ctrl.csv"
+  name: dataset_IBD_ctrl
+  dataset: "D:/common/document/GitHub/mbddpm/data/demo_IBD_ctrl.csv"
   seed: 42
 
 data:
@@ -17,7 +17,7 @@ training:
   save_epoch: 150000 # num_epochs
 
 sampling:
-  checkpoint: "./checkpoint/mbddpm_demo_IBD_case/epoch_150000_code.pt"
+  checkpoint: "D:/common/document/GitHub/mbddpm/checkpoint/dataset_IBD_ctrl/epoch_150000_dataset_IBD_ctrl_code.pt"
   generate_num: 1000  # 1000
 
 device: "cuda:0"
