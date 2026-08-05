@@ -18,6 +18,7 @@ training:
 
 sampling:
   checkpoint: "D:/common/document/GitHub/mbddpm/checkpoint/dataset_IBD_ctrl/epoch_150000_dataset_IBD_ctrl_code.pt"
+    # you need change checkpoint abs_path
   generate_num: 1000  # 1000
 
 device: "cuda:0"

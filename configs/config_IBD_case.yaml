@@ -1,5 +1,5 @@
 experiment:
-  name: dataset_IBD_ctrl
+  name: dataset_IBD_case
   dataset: "D:/common/document/GitHub/mbddpm/data/demo_IBD_case.csv"  # you need change dataset abs_path
   seed: 42
 
@@ -17,7 +17,7 @@ training:
   save_epoch: 150000 # num_epochs
 
 sampling:
-  checkpoint: "D:/common/document/GitHub/mbddpm/checkpoint/dataset_IBD_ctrl/epoch_150000_dataset_IBD_ctrl_code.pt"
+  checkpoint: "D:/common/document/GitHub/mbddpm/checkpoint/dataset_IBD_case/epoch_150000_dataset_IBD_case_code.pt"
   # you need change checkpoint abs_path
   generate_num: 1000  # 1000
 

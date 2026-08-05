@@ -10,7 +10,7 @@ from mbddpm.utils.seed import set_seed
 def main():
     parser = argparse.ArgumentParser()
 
-    parser.add_argument("--config", type=str, default="../configs/config_IBD_ctrl.yaml")
+    parser.add_argument("--config", type=str, default="../configs/config_IBD_case.yaml")
 
     args = parser.parse_args()
     # get config
