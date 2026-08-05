@@ -1,18 +1,36 @@
+import random
 import numpy as np
 import pandas as pd
+
 import matplotlib.pyplot as plt
 import seaborn as sns
 
 from sklearn.ensemble import RandomForestClassifier
 from sklearn.linear_model import LogisticRegression
-from sklearn.metrics import accuracy_score, f1_score, matthews_corrcoef, roc_auc_score
+from sklearn.metrics import (
+    accuracy_score,
+    f1_score,
+    matthews_corrcoef,
+    roc_auc_score
+)
 from sklearn.model_selection import StratifiedKFold
 from sklearn.preprocessing import StandardScaler
 from sklearn.utils import shuffle
-from sklearn.svm import SVC
+
 from xgboost import XGBClassifier
 
 from mbddpm.utils.get_project_root import get_project_root
+
+
+# ==================================================
+# Reproducibility
+# ==================================================
+
+SEED = 42
+
+random.seed(SEED)
+np.random.seed(SEED)
+
 
 
 # ==================================================
@@ -59,7 +77,7 @@ def get_models():
             C=0.1,
             solver="liblinear",
             max_iter=2000,
-            random_state=42
+            random_state=SEED
         ),
 
 
@@ -67,16 +85,8 @@ def get_models():
         RandomForestClassifier(
             n_estimators=300,
             max_depth=6,
-            random_state=42
-        ),
-
-
-        "SVM":
-        SVC(
-            C=1.0,
-            kernel="rbf",
-            probability=True,
-            random_state=42
+            random_state=SEED,
+            n_jobs=-1
         ),
 
 
@@ -87,7 +97,7 @@ def get_models():
             learning_rate=0.05,
             subsample=0.8,
             eval_metric="logloss",
-            random_state=42
+            random_state=SEED
         )
     }
 
@@ -104,15 +114,13 @@ def evaluate(model, X_train, y_train, X_test, y_test):
         y_train
     )
 
-
     pred = model.predict(
         X_test
     )
 
-
     prob = model.predict_proba(
         X_test
-    )[:,1]
+    )[:, 1]
 
 
     return {
@@ -145,13 +153,14 @@ def evaluate(model, X_train, y_train, X_test, y_test):
 
 
 # ==================================================
-# Data paths
+# Dataset
 # ==================================================
 
 real_X, real_y = load_data(
     "D:/common/document/GitHub/mbddpm/data/demo_IBD_case.csv",
     "D:/common/document/GitHub/mbddpm/data/demo_IBD_ctrl.csv"
 )
+
 
 
 sim_X, sim_y = load_data(
@@ -161,7 +170,7 @@ sim_X, sim_y = load_data(
 
 
 
-# Feature check
+# Feature consistency
 
 if list(real_X.columns) != list(sim_X.columns):
 
@@ -178,11 +187,12 @@ if list(real_X.columns) != list(sim_X.columns):
 skf = StratifiedKFold(
     n_splits=5,
     shuffle=True,
-    random_state=42
+    random_state=SEED
 )
 
 
 results = []
+
 
 
 for fold, (train_idx, test_idx) in enumerate(
@@ -196,7 +206,7 @@ for fold, (train_idx, test_idx) in enumerate(
 
 
     # --------------------------
-    # Real train/test
+    # Real train/test split
     # --------------------------
 
     X_train = real_X.iloc[train_idx]
@@ -210,7 +220,7 @@ for fold, (train_idx, test_idx) in enumerate(
 
     # --------------------------
     # Scaling
-    # fit only training fold
+    # Fit only training data
     # --------------------------
 
     scaler = StandardScaler()
@@ -220,11 +230,9 @@ for fold, (train_idx, test_idx) in enumerate(
         X_train
     )
 
-
     X_test_scaled = scaler.transform(
         X_test
     )
-
 
     sim_X_scaled = scaler.transform(
         sim_X
@@ -247,15 +255,17 @@ for fold, (train_idx, test_idx) in enumerate(
             y_test
         )
 
+
         metric.update({
 
-            "Fold":fold,
+            "Fold": fold,
 
-            "Model":name,
+            "Model": name,
 
-            "Experiment":"Real_only"
+            "Experiment": "Real_only"
 
         })
+
 
         results.append(metric)
 
@@ -285,12 +295,11 @@ for fold, (train_idx, test_idx) in enumerate(
     ]
 
 
-    # Random sampling
-    # Different seed for each fold
 
     rng = np.random.RandomState(
-        42 + fold
+        SEED + fold
     )
+
 
 
     case_index = rng.choice(
@@ -307,20 +316,12 @@ for fold, (train_idx, test_idx) in enumerate(
     )
 
 
-    sim_case_sub = sim_case[
-        case_index
-    ]
-
-    sim_ctrl_sub = sim_ctrl[
-        ctrl_index
-    ]
-
 
     sim_bal_X = np.vstack([
 
-        sim_case_sub,
+        sim_case[case_index],
 
-        sim_ctrl_sub
+        sim_ctrl[ctrl_index]
 
     ])
 
@@ -334,6 +335,7 @@ for fold, (train_idx, test_idx) in enumerate(
     ])
 
 
+
     X_aug = np.vstack([
 
         X_train_scaled,
@@ -341,6 +343,7 @@ for fold, (train_idx, test_idx) in enumerate(
         sim_bal_X
 
     ])
+
 
 
     y_aug = np.concatenate([
@@ -352,11 +355,13 @@ for fold, (train_idx, test_idx) in enumerate(
     ])
 
 
+
     X_aug, y_aug = shuffle(
         X_aug,
         y_aug,
-        random_state=42
+        random_state=SEED
     )
+
 
 
     for name, model in get_models().items():
@@ -372,9 +377,9 @@ for fold, (train_idx, test_idx) in enumerate(
 
         metric.update({
 
-            "Fold":fold,
+            "Fold": fold,
 
-            "Model":name,
+            "Model": name,
 
             "Experiment":
             "Real_plus_Synthetic_Balanced"
@@ -388,63 +393,6 @@ for fold, (train_idx, test_idx) in enumerate(
 
     # ==================================================
     # Experiment 3
-    # Real + all synthetic
-    # ==================================================
-
-    X_all = np.vstack([
-
-        X_train_scaled,
-
-        sim_X_scaled
-
-    ])
-
-
-    y_all = np.concatenate([
-
-        y_train,
-
-        sim_y
-
-    ])
-
-
-    X_all, y_all = shuffle(
-        X_all,
-        y_all,
-        random_state=42
-    )
-
-
-    for name, model in get_models().items():
-
-        metric = evaluate(
-            model,
-            X_all,
-            y_all,
-            X_test_scaled,
-            y_test
-        )
-
-
-        metric.update({
-
-            "Fold":fold,
-
-            "Model":name,
-
-            "Experiment":
-            "Real_plus_All_Synthetic"
-
-        })
-
-
-        results.append(metric)
-
-
-
-    # ==================================================
-    # Experiment 4
     # Synthetic only (TSTR)
     # ==================================================
 
@@ -461,9 +409,9 @@ for fold, (train_idx, test_idx) in enumerate(
 
         metric.update({
 
-            "Fold":fold,
+            "Fold": fold,
 
-            "Model":name,
+            "Model": name,
 
             "Experiment":
             "Synthetic_only_TSTR"
@@ -501,7 +449,7 @@ summary = (
 
     result_df
     .groupby(
-        ["Model","Experiment"]
+        ["Model", "Experiment"]
     )
     [
         [
@@ -512,7 +460,7 @@ summary = (
         ]
     ]
     .agg(
-        ["mean","std"]
+        ["mean", "std"]
     )
 
 )
@@ -528,11 +476,6 @@ summary.to_csv(
 # ==================================================
 # Plot 1
 # AUC barplot
-# Directly from fold results
-# ==================================================
-# ==================================================
-# Plot 1
-# AUC barplot
 # ==================================================
 
 sns.set_theme(
@@ -544,6 +487,7 @@ sns.set_theme(
 plt.figure(
     figsize=(12,6)
 )
+
 
 
 ax = sns.barplot(
@@ -564,25 +508,17 @@ ax.set_ylabel(
 
 
 ax.set_xlabel(
-    "",
-    fontsize=14
+    ""
 )
 
 
 ax.set_title(
     "Downstream classification performance",
-    fontsize=16,
-    pad=15
+    fontsize=16
 )
 
 
 plt.xticks(
-    rotation=0,
-    fontsize=12
-)
-
-
-plt.yticks(
     fontsize=12
 )
 
@@ -616,19 +552,18 @@ plt.close()
 # Plot 2
 # AUC heatmap
 # ==================================================
-# ==================================================
-# Plot 2
-# AUC heatmap
-# ==================================================
 
 auc_mean = (
+
     result_df
     .groupby(
         ["Model","Experiment"]
     )["AUC"]
     .mean()
     .reset_index()
+
 )
+
 
 
 auc_matrix = auc_mean.pivot(
@@ -638,70 +573,58 @@ auc_matrix = auc_mean.pivot(
 )
 
 
-# 简化显示名称
+
 auc_matrix.columns = [
+
     "Real",
+
     "Real+Balanced",
-    "Real+All",
+
     "Synthetic(TSTR)"
+
 ]
 
 
+
 plt.figure(
-    figsize=(10,5)
+    figsize=(8,5)
 )
 
 
-ax = sns.heatmap(
+
+sns.heatmap(
     auc_matrix,
     annot=True,
     fmt=".3f",
     cmap="YlGnBu",
     linewidths=0.5,
-    linecolor="white",
     cbar_kws={
         "label":"Mean AUC"
-    },
-    annot_kws={
-        "fontsize":11
     }
 )
 
 
+
 plt.title(
     "Mean AUC across 5-fold CV",
-    fontsize=15,
-    pad=15
+    fontsize=15
 )
 
 
-plt.xlabel(
-    "",
-    fontsize=12
-)
+plt.xlabel("")
+
+plt.ylabel("")
 
 
-plt.ylabel(
-    "",
-    fontsize=12
-)
-
-
-# 横坐标倾斜
 plt.xticks(
     rotation=45,
-    ha="right",
-    fontsize=11
+    ha="right"
 )
 
-
-plt.yticks(
-    rotation=0,
-    fontsize=11
-)
 
 
 plt.tight_layout()
+
 
 
 plt.savefig(
@@ -714,8 +637,10 @@ plt.savefig(
 plt.close()
 
 
+
 print("\n===== Summary =====")
 print(summary)
+
 
 print(
     f"\nResults saved in: {result_dir}"
